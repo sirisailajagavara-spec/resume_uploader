@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Resume&Interview Intelligence Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-base: #0b0f19;
+            --bg-surface: rgba(17, 24, 39, 0.7);
+            --bg-card: rgba(30, 41, 59, 0.45);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.16);
+            
+            --color-primary: #8b5cf6;
+            --color-primary-glow: rgba(139, 92, 246, 0.15);
+            --color-primary-hover: #a78bfa;
+            
+            --color-success: #10b981;
+            --color-success-glow: rgba(16, 185, 129, 0.15);
+            --color-error: #f43f5e;
+            --color-error-glow: rgba(244, 63, 94, 0.15);
+            
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --text-darker: #6b7280;
+            
+            --font-display: 'Outfit', 'Inter', sans-serif;
+            --font-sans: 'Inter', sans-serif;
+            
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-base);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .app-container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 24px;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--color-primary), #6366f1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .logo-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .logo-text h1 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, #ffffff, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .backend-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-darker);
+            box-shadow: 0 0 8px var(--text-darker);
+            transition: all 0.3s ease;
+        }
+
+        .status-dot.online {
+            background-color: var(--color-success);
+            box-shadow: 0 0 10px var(--color-success);
+        }
+
+        .status-dot.offline {
+            background-color: var(--color-error);
+            box-shadow: 0 0 10px var(--color-error);
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 24px;
+            flex: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .glass-card {
+            background: var(--bg-surface);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            transition: border-color var(--transition-speed);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--color-primary);
+        }
+        .presets-container {
+            margin-bottom: 20px;
+        }
+
+        .presets-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .presets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+        }
+
+        .preset-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--color-primary);
+            background: rgba(139, 92, 246, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .preset-btn.active {
+            border-color: var(--color-primary);
+            background: var(--color-primary-glow);
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+        }
+
+        .preset-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .preset-role {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .upload-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(15, 23, 42, 0.25);
+            transition: all var(--transition-speed) ease;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--color-primary);
+            background: rgba(139, 92, 246, 0.02);
+        }
+
+        .upload-zone svg {
+            width: 32px;
+            height: 32px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .upload-zone:hover svg {
+            transform: translateY(-4px);
+            color: var(--color-primary);
+        }
+
+        .upload-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .upload-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-darker);
+        }
+        .upload-zone.drag-active {
+            border-color: var(--color-primary);
+            background: var(--color-primary-glow);
+        }
+
+        /* Form Styling */
+        .screening-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+        }
+
+        .input-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .input-val-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--color-primary-hover);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper svg {
+            position: absolute;
+            left: 12px;
+            width: 16px;
+            height: 16px;
+            color: var(--text-darker);
+            pointer-events: none;
+        }
+
+        .text-input, .select-input {
+            width: 100%;
+            background-color: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px 12px 10px 38px;
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .text-input:focus, .select-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+            background-color: rgba(15, 23, 42, 0.80);
+        }
+
+        /* Select custom arrow */
+        .select-input {
+            appearance: none;
+            cursor: pointer;
+        }
+        .range-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .range-slider {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 99px;
+            appearance: none;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            box-shadow: 0 0 8px var(--color-primary);
+            transition: transform 0.1s ease;
+        }
+
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        .submit-btn {
+            background: linear-gradient(135deg, var(--color-primary), #6366f1);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #9b6bf7, #7275f4);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(1px);
+        }
+        .parsing-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            gap: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .parsing-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+        }
+
+        .scanning-laser {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--color-primary), transparent);
+            animation: scan 1.5s infinite ease-in-out;
+            top: 0;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        .parsing-status-text {
+            font-size: 0.85rem;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        /* Dashboard Right Panel (Results) */
+        .results-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        /* State Switchers */
+        .results-state {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .results-state.active {
+            display: flex;
+        }
+
+        /* Empty State */
+        .empty-state {
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+            flex: 1;
+            border: 1px dashed var(--border-color);
+            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.1);
+        }
+
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.03);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+            color: var(--text-darker);
+        }
+
+        .empty-state-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .empty-state-title {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .empty-state-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            max-width: 260px;
+            line-height: 1.4;
+        }
+
+        /* Prediction Result States */
+        .result-header-card {
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            border: 1px solid transparent;
+            transition: all var(--transition-speed);
+        }
+
+        .result-header-card.hire {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.02));
+            border-color: rgba(16, 185, 129, 0.25);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.05);
+        }
+
+        .result-header-card.reject {
+            background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), rgba(244, 63, 94, 0.02));
+            border-color: rgba(244, 63, 94, 0.25);
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.05);
+        }
+
+        .result-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-header-card.hire .result-icon-box {
+            background: var(--color-success);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .result-header-card.reject .result-icon-box {
+            background: var(--color-error);
+            color: white;
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+        }
+
+        .result-icon-box svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .result-badge-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2px;
+        }
+
+        .result-header-card.hire .result-badge-label {
+            color: var(--color-success);
+        }
+
+        .result-header-card.reject .result-badge-label {
+            color: var(--color-error);
+        }
+
+        .result-decision-text {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Match Gauge & Score Column */
+        .score-row {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Radial Gauge */
+        .radial-gauge {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+
+        .radial-gauge svg {
+            transform: rotate(-90deg);
+            width: 100px;
+            height: 100px;
+        }
+
+        .radial-gauge circle {
+            fill: none;
+            stroke-width: 8;
+        }
+
+        .radial-gauge .bg-circle {
+            stroke: rgba(255, 255, 255, 0.05);
+        }
+
+        .radial-gauge .progress-circle {
+            stroke: var(--color-primary);
+            stroke-dasharray: 283; /* 2 * PI * r (r=45) */
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 1s ease-out;
+            stroke-linecap: round;
+        }
+
+        .radial-gauge-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .radial-gauge-num {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .radial-gauge-lbl {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .score-explanation {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .score-explanation strong {
+            color: var(--text-main);
+        }
+
+        /* Analysis Benchmark Bars */
+        .benchmark-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 14px;
+        }
+
+        .benchmark-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .benchmark-bar-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .bar-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+        }
+
+        .bar-name {
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .bar-value {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .bar-track {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 99px;
+            position: relative;
+            overflow: visible;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--color-primary), #6366f1);
+            border-radius: 99px;
+            width: 0%;
+            transition: width 1s ease-out;
+        }
+
+        /* Marker representing average */
+        .bar-avg-marker {
+            position: absolute;
+            top: -4px;
+            width: 4px;
+            height: 14px;
+            background-color: var(--color-success);
+            border-radius: 2px;
+            box-shadow: 0 0 6px var(--color-success);
+            transform: translateX(-50%);
+        }
+
+        .bar-avg-tooltip {
+            position: absolute;
+            top: -24px;
+            transform: translateX(-50%);
+            background: rgba(16, 185, 129, 0.9);
+            color: black;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 4px;
+            border-radius: 4px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .bar-track:hover .bar-avg-tooltip {
+            opacity: 1;
+        }
+
+        .legend-container {
+            display: flex;
+            gap: 12px;
+            font-size: 0.65rem;
+            justify-content: flex-end;
+            margin-top: -6px;
+            color: var(--text-darker);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .legend-color {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+        }
+
+        /* Analysis Comments */
+        .eval-insights-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 10px;
+        }
+
+        .insight-header {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .insight-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Toast system */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid var(--border-color);
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-main);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--color-success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--color-error);
+        }
+
+        .toast svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .toast.success svg { color: var(--color-success); }
+        .toast.error svg { color: var(--color-error); }
+
+        /* Animation utilities */
+        .slide-in {
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pulse-light {
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.2); }
+            100% { box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.05); }
+        }
+
+        /* Footer styling */
+        footer {
+            text-align: center;
+            padding: 24px 0;
+            font-size: 0.75rem;
+            color: var(--text-darker);
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+
+        footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: var(--color-primary-hover);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header>
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>AI-Powered Resume&Interview Intelligence</h1>
+                    <p>Machine Learning Screening Engine</p>
+                </div>
+            </div>
+            <div class="backend-status" id="backendStatusContainer">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Checking Backend...</span>
+            </div>
+        </header>
+
+        <!-- Dashboard Body -->
+        <div class="dashboard-grid">
+            
+            <!-- Left Panel (Inputs) -->
+            <div class="glass-card">
+                
+                <!-- Quick Load Presets -->
+                <div class="presets-container">
+                    <span class="presets-label">Quick Load Dataset Presets</span>
+                    <div class="presets-grid" id="presetsGrid">
+                        <!-- Presets injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Drag & Drop Upload Zone -->
+                <div class="upload-zone" id="uploadZone">
+                    <div class="parsing-overlay" id="parsingOverlay">
+                        <div class="scanning-laser"></div>
+                        <div class="spinner"></div>
+                        <div class="parsing-status-text" id="parsingStatusText">Scanning Resume...</div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+                    </svg>
+                    <div class="upload-title">Drag & Drop Resume File</div>
+                    <div class="upload-subtitle">Simulate parsing of PDF, Word or Text files to auto-populate form</div>
+                    <input type="file" id="fileInput" style="display: none;" accept=".pdf,.doc,.docx,.txt">
+                </div>
+
+                <div class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.247 5.252a6 6 0 00-10.495 0m10.495 0a6 6 0 010 6.748m0-6.748a6 6 0 00-10.495 0m10.495 0H4.752m10.495 6.748a6 6 0 01-10.495 0m10.495 0H4.752m0-6.748a6 6 0 000 6.748" />
+                    </svg>
+                    Candidate Details Evaluator
+                </div>
+
+                <!-- Evaluation Input Form -->
+                <form class="screening-form" id="resumeForm">
+                    
+                    <div class="form-row">
+                        <!-- Full Name -->
+                        <div class="input-group">
+                            <label class="input-label" for="name">Candidate Name</label>
+                            <div class="input-wrapper">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <input class="text-input" type="text" id="name" placeholder="Ashley Ali" required>
+                            </div>
+                        </div>
+
+                        <!-- Job Role (Drop down + Type) -->
+                        <div class="input-group">
+                            <label class="input-label" for="role">Target Job Role</label>
+                            <div class="input-wrapper">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                                <select class="select-input" id="role" required>
+                                    <option value="" disabled selected>Select target role...</option>
+                                    <option value="Data Scientist">Data Scientist</option>
+                                    <option value="AI Researcher">AI Researcher</option>
+                                    <option value="Software Engineer">Software Engineer</option>
+                                    <option value="Cybersecurity Analyst">Cybersecurity Analyst</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <!-- Education -->
+                        <div class="input-group">
+                            <label class="input-label" for="education">Highest Education</label>
+                            <div class="input-wrapper">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+                                </svg>
+                                <select class="select-input" id="education" required>
+                                    <option value="" disabled selected>Select education level...</option>
+                                    <option value="B.Tech">B.Tech (Bachelor of Technology)</option>
+                                    <option value="B.Sc">B.Sc (Bachelor of Science)</option>
+                                    <option value="M.Tech">M.Tech (Master of Technology)</option>
+                                    <option value="MBA">MBA (Master of Business Admin)</option>
+                                    <option value="PhD">PhD (Doctor of Philosophy)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Certifications -->
+                        <div class="input-group">
+                            <label class="input-label" for="certifications">Certifications</label>
+                            <div class="input-wrapper">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                </svg>
+                                <select class="select-input" id="certifications">
+                                    <option value="" selected>None / No Major Certificate</option>
+                                    <option value="Google ML">Google ML Engineer</option>
+                                    <option value="Deep Learning Specialization">Deep Learning Specialization</option>
+                                    <option value="AWS Certified">AWS Certified Architect</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills List -->
+                    <div class="input-group">
+                        <label class="input-label" for="skills">Key Skills (Comma Separated)</label>
+                        <div class="input-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                            </svg>
+                            <input class="text-input" type="text" id="skills" placeholder="Python, SQL, PyTorch, Communication" required>
+                        </div>
+                    </div>
+
+                    <!-- Auto Calculate Toggle Checkbox -->
+                    <div style="display: flex; align-items: center; gap: 8px; margin: 10px 0 16px 0; font-size: 0.8rem; color: var(--text-muted);">
+                        <input type="checkbox" id="autoCalculate" checked style="width: 16px; height: 16px; accent-color: var(--color-primary); cursor: pointer;">
+                        <label for="autoCalculate" style="cursor: pointer; font-weight: 500; user-select: none;">Auto-calculate performance metrics (AI Score & Projects count)</label>
+                    </div>
+
+                    <!-- Sliders Grid -->
+                    <div class="form-row">
+                        <!-- Experience (Years) Slider -->
+                        <div class="input-group">
+                            <div class="input-label">
+                                <span>Experience (Years)</span>
+                                <span class="input-val-badge" id="expVal">3 Yrs</span>
+                            </div>
+                            <div class="range-wrapper">
+                                <input type="range" class="range-slider" id="exp" min="0" max="20" step="1" value="3">
+                            </div>
+                        </div>
+
+                        <!-- Salary Expectation Slider -->
+                        <div class="input-group">
+                            <div class="input-label">
+                                <span>Salary Expectation ($)</span>
+                                <span class="input-val-badge" id="salaryVal">$50,000</span>
+                            </div>
+                            <div class="range-wrapper">
+                                <input type="range" class="range-slider" id="salary" min="20000" max="200000" step="5000" value="50000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row" id="advancedMetricsRow" style="display: none;">
+                        <!-- Projects Count Slider -->
+                        <div class="input-group">
+                            <div class="input-label">
+                                <span>Projects Handled</span>
+                                <span class="input-val-badge" id="projectsVal">4 Projects</span>
+                            </div>
+                            <div class="range-wrapper">
+                                <input type="range" class="range-slider" id="projects" min="0" max="15" step="1" value="4">
+                            </div>
+                        </div>
+
+                        <!-- AI Score Slider -->
+                        <div class="input-group">
+                            <div class="input-label">
+                                <span>AI Screening Score</span>
+                                <span class="input-val-badge" id="scoreVal">85%</span>
+                            </div>
+                            <div class="range-wrapper">
+                                <input type="range" class="range-slider" id="score" min="0" max="100" step="1" value="85">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Screen Button -->
+                    <button type="submit" class="submit-btn pulse-light" id="submitBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Evaluate Candidate Suitability
+                    </button>
+                    
+                </form>
+
+            </div>
+
+            <!-- Right Panel (Results) -->
+            <div class="glass-card results-panel">
+                <div class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Screening Outcome & Insights
+                </div>
+
+                <!-- Empty State (Active by Default) -->
+                <div class="results-state active" id="stateEmpty">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                            </svg>
+                        </div>
+                        <div class="empty-state-title">Awaiting Candidate Evaluation</div>
+                        <div class="empty-state-text">Fill in the candidate metrics, click a demo candidate, or drop a resume file to trigger the model's screening predictions.</div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div class="results-state" id="stateLoading" style="align-items: center; justify-content: center; padding: 40px;">
+                    <div class="spinner" style="width: 50px; height: 50px; border-width: 4px; margin-bottom: 16px;"></div>
+                    <p style="font-size: 0.9rem; font-weight: 500; color: var(--text-muted);">Consulting AI Screening Classifier...</p>
+                </div>
+
+                <!-- Result Show State -->
+                <div class="results-state" id="stateResult">
+                    <div class="slide-in">
+                        
+                        <!-- Prediction Card (Dynamic Border/BG injection via JS) -->
+                        <div class="result-header-card" id="resultHeaderCard">
+                            <div class="result-icon-box" id="resultIconBox">
+                                <!-- Dynamic SVG Check/Cross -->
+                            </div>
+                            <div>
+                                <div class="result-badge-label" id="resultBadgeLabel">Outcome</div>
+                                <div class="result-decision-text" id="resultDecisionText">HIRE / REJECT</div>
+                            </div>
+                        </div>
+
+                        <!-- AI Match Score Gauge -->
+                        <div class="score-row">
+                            <div class="radial-gauge">
+                                <svg>
+                                    <circle class="bg-circle" cx="50" cy="50" r="45"></circle>
+                                    <circle class="progress-circle" id="radialCircle" cx="50" cy="50" r="45"></circle>
+                                </svg>
+                                <div class="radial-gauge-text">
+                                    <div class="radial-gauge-num" id="gaugeScoreNum">0%</div>
+                                    <div class="radial-gauge-lbl">AI Score</div>
+                                </div>
+                            </div>
+                            <div class="score-explanation" id="decisionExplanation">
+                                Candidate matches critical markers. Evaluation suggests the applicant holds sufficient parameters to pass standard pre-screening criteria.
+                            </div>
+                        </div>
+
+                        <!-- Data Benchmark Visualizer -->
+                        <div class="benchmark-section-title">Candidate Metrics vs. Dataset Benchmarks</div>
+                        <div class="benchmark-list">
+                            
+                            <!-- Experience Bar -->
+                            <div class="benchmark-bar-item">
+                                <div class="bar-labels">
+                                    <span class="bar-name">Experience</span>
+                                    <span class="bar-value"><span id="metricExp">0</span> / 20 Yrs</span>
+                                </div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" id="barFillExp"></div>
+                                    <div class="bar-avg-marker" style="left: 24.5%;" title="Average Experience (4.9 Yrs)"></div> <!-- 4.9 / 20 * 100 = 24.5% -->
+                                    <div class="bar-avg-tooltip" style="left: 24.5%;">Avg: 4.9 Yrs</div>
+                                </div>
+                            </div>
+
+                            <!-- Projects Bar -->
+                            <div class="benchmark-bar-item">
+                                <div class="bar-labels">
+                                    <span class="bar-name">Projects Count</span>
+                                    <span class="bar-value"><span id="metricProjects">0</span> / 15</span>
+                                </div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" id="barFillProjects"></div>
+                                    <div class="bar-avg-marker" style="left: 34.2%;" title="Average Projects (5.1)"></div> <!-- 5.1 / 15 * 100 = 34% -->
+                                    <div class="bar-avg-tooltip" style="left: 34.2%;">Avg: 5.1</div>
+                                </div>
+                            </div>
+
+                            <!-- AI Score Bar -->
+                            <div class="benchmark-bar-item">
+                                <div class="bar-labels">
+                                    <span class="bar-name">AI Score</span>
+                                    <span class="bar-value"><span id="metricScore">0</span>%</span>
+                                </div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" id="barFillScore"></div>
+                                    <div class="bar-avg-marker" style="left: 84%;" title="Average AI Score (84%)"></div>
+                                    <div class="bar-avg-tooltip" style="left: 84%;">Avg: 84%</div>
+                                </div>
+                            </div>
+
+                            <!-- Salary Bar -->
+                            <div class="benchmark-bar-item">
+                                <div class="bar-labels">
+                                    <span class="bar-name">Salary Expectation</span>
+                                    <span class="bar-value">$<span id="metricSalary">0</span></span>
+                                </div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" id="barFillSalary"></div>
+                                    <div class="bar-avg-marker" style="left: 33.3%;" title="Average Salary ($80,000)"></div> <!-- ($80k - 20k) / (200k - 20k) = 60k/180k = 33.3% -->
+                                    <div class="bar-avg-tooltip" style="left: 33.3%;">Avg: $80k</div>
+                                </div>
+                            </div>
+
+                            <!-- Legend -->
+                            <div class="legend-container">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: linear-gradient(to right, var(--color-primary), #6366f1)"></div>
+                                    <span>Candidate Score</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: var(--color-success)"></div>
+                                    <span>Dataset Average (n=1000)</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Analytical Breakdown Card -->
+                        <div class="eval-insights-card">
+                            <div class="insight-header">
+                                <svg xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px; color: var(--color-primary-hover)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Key Recruiter Observations
+                            </div>
+                            <div class="insight-text" id="insightObservations">
+                                Loading insights...
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            SieveAI Screen Dashboard • Powered by Decision Tree Classifier • Built with Flask and Vanilla CSS/JS • <a href="file:///c:/Users/siris/OneDrive/Desktop/resume1_project/AI_Resume_Screening.csv" target="_blank">View Dataset</a>
+        </footer>
+
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Preset Candidate Profiles
+        const presets = [
+            {
+                name: "Ashley Ali",
+                role: "AI Researcher",
+                education: "B.Sc",
+                certifications: "",
+                skills: "TensorFlow, NLP, Pytorch",
+                exp: 10,
+                projects: 8,
+                score: 100,
+                salary: 104895,
+                tag: "Hire"
+            },
+            {
+                name: "Wesley Roman",
+                role: "Data Scientist",
+                education: "MBA",
+                certifications: "Google ML",
+                skills: "Deep Learning, Machine Learning, Python, SQL",
+                exp: 10,
+                projects: 1,
+                score: 100,
+                salary: 113002,
+                tag: "Hire"
+            },
+            {
+                name: "David Vance",
+                role: "Software Engineer",
+                education: "B.Tech",
+                certifications: "AWS Certified",
+                skills: "Python, Django, PostgreSQL, Docker, AWS",
+                exp: 5,
+                projects: 6,
+                score: 92,
+                salary: 82000,
+                tag: "Hire"
+            },
+            {
+                name: "Taylor Cross",
+                role: "Cybersecurity Analyst",
+                education: "B.Sc",
+                certifications: "",
+                skills: "Network Security, Wireshark, Basic Python",
+                exp: 1,
+                projects: 1,
+                score: 55,
+                salary: 95000,
+                tag: "Reject"
+            }
+        ];
+
+        // Random mock profiles for file drop simulation
+        const mockRandomResumes = [
+            {
+                name: "Sarah Jenkins",
+                role: "Software Engineer",
+                education: "B.Tech",
+                certifications: "AWS Certified",
+                skills: "React, Node.js, JavaScript, MongoDB, Python, Git",
+                exp: 4,
+                projects: 5,
+                score: 88,
+                salary: 76000
+            },
+            {
+                name: "Dr. Ryan Patel",
+                role: "AI Researcher",
+                education: "PhD",
+                certifications: "Deep Learning Specialization",
+                skills: "PyTorch, Computer Vision, GANs, NLP, Python, C++",
+                exp: 6,
+                projects: 9,
+                score: 96,
+                salary: 120000
+            },
+            {
+                name: "Marcus Aurelius",
+                role: "Cybersecurity Analyst",
+                education: "M.Tech",
+                certifications: "Google ML",
+                skills: "Penetration Testing, Kali Linux, Python, Linux Administration",
+                exp: 3,
+                projects: 3,
+                score: 74,
+                salary: 85000
+            },
+            {
+                name: "Jessica Albright",
+                role: "Data Scientist",
+                education: "PhD",
+                certifications: "Deep Learning Specialization",
+                skills: "Pandas, Scikit-learn, Tableau, Python, R, SQL, NLP",
+                exp: 7,
+                projects: 7,
+                score: 93,
+                salary: 105000
+            },
+            {
+                name: "Zayn Malik",
+                role: "Software Engineer",
+                education: "B.Sc",
+                certifications: "",
+                skills: "HTML, CSS, basic Javascript, jQuery",
+                exp: 1,
+                projects: 2,
+                score: 60,
+                salary: 68000
+            }
+        ];
+
+        // DOM elements
+        const form = document.getElementById("resumeForm");
+        const submitBtn = document.getElementById("submitBtn");
+        const statusDot = document.getElementById("statusDot");
+        const statusText = document.getElementById("statusText");
+        const uploadZone = document.getElementById("uploadZone");
+        const fileInput = document.getElementById("fileInput");
+        const parsingOverlay = document.getElementById("parsingOverlay");
+        const parsingStatusText = document.getElementById("parsingStatusText");
+        const presetsGrid = document.getElementById("presetsGrid");
+        
+        // Result views
+        const stateEmpty = document.getElementById("stateEmpty");
+        const stateLoading = document.getElementById("stateLoading");
+        const stateResult = document.getElementById("stateResult");
+        const resultHeaderCard = document.getElementById("resultHeaderCard");
+        const resultIconBox = document.getElementById("resultIconBox");
+        const resultBadgeLabel = document.getElementById("resultBadgeLabel");
+        const resultDecisionText = document.getElementById("resultDecisionText");
+        const radialCircle = document.getElementById("radialCircle");
+        const gaugeScoreNum = document.getElementById("gaugeScoreNum");
+        const decisionExplanation = document.getElementById("decisionExplanation");
+        const insightObservations = document.getElementById("insightObservations");
+
+        // Metric texts
+        const metricExp = document.getElementById("metricExp");
+        const metricProjects = document.getElementById("metricProjects");
+        const metricScore = document.getElementById("metricScore");
+        const metricSalary = document.getElementById("metricSalary");
+
+        // Metric fills
+        const barFillExp = document.getElementById("barFillExp");
+        const barFillProjects = document.getElementById("barFillProjects");
+        const barFillScore = document.getElementById("barFillScore");
+        const barFillSalary = document.getElementById("barFillSalary");
+
+        // Inputs
+        const inputName = document.getElementById("name");
+        const inputRole = document.getElementById("role");
+        const inputEducation = document.getElementById("education");
+        const inputCertifications = document.getElementById("certifications");
+        const inputSkills = document.getElementById("skills");
+        const inputExp = document.getElementById("exp");
+        const inputProjects = document.getElementById("projects");
+        const inputScore = document.getElementById("score");
+        const inputSalary = document.getElementById("salary");
+
+        // Auto Calculate Elements
+        const autoCalculateCheckbox = document.getElementById("autoCalculate");
+        const advancedMetricsRow = document.getElementById("advancedMetricsRow");
+
+        // Input Val Badges
+        const expVal = document.getElementById("expVal");
+        const projectsVal = document.getElementById("projectsVal");
+        const scoreVal = document.getElementById("scoreVal");
+        const salaryVal = document.getElementById("salaryVal");
+
+        let backendOnline = false;
+
+        // Toggle advanced metrics row based on checkbox
+        autoCalculateCheckbox.addEventListener("change", (e) => {
+            if (e.target.checked) {
+                advancedMetricsRow.style.display = "none";
+            } else {
+                advancedMetricsRow.style.display = "flex";
+            }
+        });
+
+        // Initialize Slider Value Badges
+        inputExp.addEventListener("input", (e) => expVal.textContent = e.target.value + " Yrs");
+        inputProjects.addEventListener("input", (e) => projectsVal.textContent = e.target.value + " Projects");
+        inputScore.addEventListener("input", (e) => scoreVal.textContent = e.target.value + "%");
+        inputSalary.addEventListener("input", (e) => {
+            salaryVal.textContent = "$" + Number(e.target.value).toLocaleString();
+        });
+
+        // Initialize Presets Grid
+        function initPresets() {
+            presetsGrid.innerHTML = "";
+            presets.forEach((candidate, idx) => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "preset-btn";
+                btn.setAttribute("data-index", idx);
+                btn.innerHTML = `
+                    <span class="preset-name">${candidate.name}</span>
+                    <span class="preset-role">${candidate.role}</span>
+                `;
+                btn.addEventListener("click", () => loadPreset(candidate, btn));
+                presetsGrid.appendChild(btn);
+            });
+        }
+
+        function loadPreset(cand, activeBtn) {
+            // Remove active classes
+            document.querySelectorAll(".preset-btn").forEach(b => b.classList.remove("active"));
+            if (activeBtn) activeBtn.classList.add("active");
+
+            // Fill inputs with animation/flashing effect
+            animateValueFill(inputName, cand.name);
+            animateValueFill(inputRole, cand.role);
+            animateValueFill(inputEducation, cand.education);
+            animateValueFill(inputCertifications, cand.certifications);
+            animateValueFill(inputSkills, cand.skills);
+            
+            animateSliderFill(inputExp, cand.exp, expVal, " Yrs");
+            animateSliderFill(inputProjects, cand.projects, projectsVal, " Projects");
+            animateSliderFill(inputScore, cand.score, scoreVal, "%");
+            animateSliderFill(inputSalary, cand.salary, salaryVal, "", true);
+
+            showToast(`Loaded details for ${cand.name}`, "success");
+        }
+
+        // Highlight input animation
+        function animateValueFill(element, val) {
+            element.value = val;
+            element.style.borderColor = "var(--color-primary)";
+            element.style.boxShadow = "0 0 10px rgba(139, 92, 246, 0.4)";
+            setTimeout(() => {
+                element.style.borderColor = "";
+                element.style.boxShadow = "";
+            }, 500);
+        }
+
+        function animateSliderFill(slider, targetVal, badge, suffix, isCurrency = false) {
+            let start = Number(slider.value);
+            let end = Number(targetVal);
+            if (start === end) {
+                slider.value = end;
+                badge.textContent = isCurrency ? "$" + end.toLocaleString() : end + suffix;
+                return;
+            }
+            
+            let steps = 15;
+            let currentStep = 0;
+            let increment = (end - start) / steps;
+            
+            let interval = setInterval(() => {
+                currentStep++;
+                let val = start + (increment * currentStep);
+                slider.value = Math.round(val);
+                
+                if (isCurrency) {
+                    badge.textContent = "$" + Math.round(val).toLocaleString();
+                } else {
+                    badge.textContent = Math.round(val) + suffix;
+                }
+                
+                if (currentStep >= steps) {
+                    clearInterval(interval);
+                    slider.value = end;
+                    badge.textContent = isCurrency ? "$" + end.toLocaleString() : end + suffix;
+                }
+            }, 20);
+        }
+
+        // Drag and Drop simulation
+        uploadZone.addEventListener("click", () => fileInput.click());
+        fileInput.addEventListener("change", (e) => {
+            if (e.target.files.length > 0) {
+                simulateParsing(e.target.files[0].name);
+            }
+        });
+
+        // Drag effects
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('drag-active');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('drag-active');
+            }, false);
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                simulateParsing(files[0].name);
+            }
+        });
+
+        // Simulated Parsing Process
+        function simulateParsing(filename) {
+            parsingOverlay.classList.add("active");
+            
+            const steps = [
+                "Locating resume structure...",
+                "Running OCR text extraction...",
+                "Mapping entities & core credentials...",
+                "Formatting profile schema..."
+            ];
+            
+            let stepIdx = 0;
+            parsingStatusText.textContent = steps[0];
+            
+            let interval = setInterval(() => {
+                stepIdx++;
+                if (stepIdx < steps.length) {
+                    parsingStatusText.textContent = steps[stepIdx];
+                } else {
+                    clearInterval(interval);
+                    parsingOverlay.classList.remove("active");
+                    
+                    // Choose a random template
+                    const randomIndex = Math.floor(Math.random() * mockRandomResumes.length);
+                    const randomProfile = mockRandomResumes[randomIndex];
+                    
+                    // Modify name based on filename if possible
+                    let parsedName = randomProfile.name;
+                    const cleanName = filename.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ").trim();
+                    if (cleanName.length > 3 && isNaN(cleanName)) {
+                        // capitalize words
+                        parsedName = cleanName.replace(/\b\w/g, c => c.toUpperCase());
+                    }
+                    
+                    const loadedProfile = { ...randomProfile, name: parsedName };
+                    
+                    // Clear presets selection highlight
+                    document.querySelectorAll(".preset-btn").forEach(b => b.classList.remove("active"));
+                    
+                    loadPreset(loadedProfile, null);
+                    showToast(`Successfully extracted profile: ${parsedName}`, "success");
+                }
+            }, 600);
+        }
+
+        // Notification system
+        function showToast(message, type = "success") {
+            const toast = document.createElement("div");
+            toast.className = `toast ${type}`;
+            
+            const iconSvg = type === "success" 
+                ? `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4" /></svg>`
+                : `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
+                
+            toast.innerHTML = `${iconSvg} <span>${message}</span>`;
+            document.getElementById("toastContainer").appendChild(toast);
+            
+            // Trigger animation frame
+            setTimeout(() => toast.classList.add("show"), 10);
+            
+            // Remove toast after delay
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Check backend server availability
+        async function checkBackend() {
+            try {
+                const res = await fetch("http://127.0.0.1:5001/", { method: "GET", mode: "cors" });
+                if (res.status === 200) {
+                    statusDot.className = "status-dot online";
+                    statusText.textContent = "Backend: Active";
+                    backendOnline = true;
+                } else {
+                    throw new Error("Wrong status");
+                }
+            } catch (err) {
+                statusDot.className = "status-dot offline";
+                statusText.textContent = "Backend: Offline";
+                backendOnline = false;
+            }
+        }
+
+        // Form Submit handler
+        form.addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            const name = inputName.value;
+            const role = inputRole.value;
+            const education = inputEducation.value;
+            const certifications = inputCertifications.value;
+            const skills = inputSkills.value;
+            
+            const exp = Number(inputExp.value);
+            const projects = Number(inputProjects.value);
+            const score = Number(inputScore.value);
+            const salary = Number(inputSalary.value);
+
+            // Hide empty state, show loading
+            stateEmpty.classList.remove("active");
+            stateResult.classList.remove("active");
+            stateLoading.classList.add("active");
+
+            // Format payload matching backend mapping keys
+            const payload = {
+                experience: exp,
+                salary: salary,
+                skills: skills,
+                education: education,
+                certifications: certifications,
+                role: role,
+                auto_calculate: autoCalculateCheckbox.checked
+            };
+
+            if (!autoCalculateCheckbox.checked) {
+                payload.projects = projects;
+                payload.score = score;
+            }
+
+            // Double check if backend is online before request
+            await checkBackend();
+
+            let resultData = null;
+
+            if (backendOnline) {
+                try {
+                    const response = await fetch("http://127.0.0.1:5001/predict", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorRes = await response.json();
+                        throw new Error(errorRes.error || "Internal Server Error");
+                    }
+
+                    resultData = await response.json();
+                } catch (error) {
+                    showToast(error.message, "error");
+                    fallbackLocalEvaluate(payload);
+                    return;
+                }
+            } else {
+                // Show notification and perform fallback local decision tree logic matching the CSV
+                showToast("Backend offline. Using local evaluator simulation.", "error");
+                fallbackLocalEvaluate(payload);
+                return;
+            }
+
+            if (resultData && resultData.prediction) {
+                // Update payload with backend computed metrics if they were auto-calculated
+                if (resultData.projects !== undefined) payload.projects = resultData.projects;
+                if (resultData.score !== undefined) payload.score = resultData.score;
+                renderResult(resultData.prediction, payload);
+            }
+        });
+
+        // Fallback local evaluation if backend server is not running
+        // This ensures the recruiter webpage is 100% interactive regardless of environment setup
+        function fallbackLocalEvaluate(payload) {
+            // Replicate the backend calculation logic if auto-calculate is active
+            if (payload.auto_calculate) {
+                payload.projects = payload.experience > 0 ? Math.max(1, Math.min(10, Math.floor(payload.experience))) : 3;
+                
+                let localScore = 35.0;
+                localScore += Math.min(20.0, payload.experience * 2.0);
+                
+                const edu = payload.education.toLowerCase();
+                if (edu.includes("phd")) localScore += 15.0;
+                else if (edu.includes("m.tech") || edu.includes("mba")) localScore += 10.0;
+                else if (edu.includes("b.tech") || edu.includes("b.sc")) localScore += 5.0;
+                
+                const cert = payload.certifications.toLowerCase();
+                if (cert.includes("google ml") || cert.includes("deep learning") || cert.includes("aws")) localScore += 10.0;
+                
+                const skills = payload.skills.toLowerCase();
+                const key_skills = ["python", "tensorflow", "pytorch", "nlp", "machine learning", "deep learning", "sql", "wireshark", "ethical hacking"];
+                let skillsMatched = 0;
+                key_skills.forEach(s => {
+                    if (skills.includes(s)) skillsMatched++;
+                });
+                localScore += Math.min(15.0, skillsMatched * 5.0);
+                payload.score = Math.max(10.0, Math.min(100.0, localScore));
+            }
+
+            // Replicate a simplified heuristic classifier trained on the dataset
+            let isHire = false;
+            
+            if (payload.score >= 85 && payload.experience >= 3) {
+                if (payload.salary <= 120000 || payload.projects >= 4) {
+                    isHire = true;
+                }
+            } else if (payload.score >= 95 && payload.projects >= 2) {
+                isHire = true;
+            } else if (payload.experience >= 8 && payload.score >= 70 && payload.salary <= 130000) {
+                isHire = true;
+            }
+
+            setTimeout(() => {
+                renderResult(isHire ? "Hire" : "Reject", payload);
+            }, 600);
+        }
+
+        // Render results onto the visual Dashboard
+        function renderResult(prediction, data) {
+            stateLoading.classList.remove("active");
+            stateResult.classList.add("active");
+
+            // 1. Result Header UI Card Styling
+            resultHeaderCard.className = `result-header-card ${prediction.toLowerCase()}`;
+            if (prediction.toLowerCase() === "hire") {
+                resultIconBox.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                `;
+                resultBadgeLabel.textContent = "AI Screened Recommendation";
+                resultDecisionText.textContent = "HIRE APPLICANT";
+                
+                decisionExplanation.innerHTML = `Candidate <strong>passed</strong> pre-screening requirements. High match on core qualifications, target experience, and financial scale compatibility. Recommendation: <strong>Proceed to Interview</strong>.`;
+            } else {
+                resultIconBox.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                `;
+                resultBadgeLabel.textContent = "AI Screened Recommendation";
+                resultDecisionText.textContent = "REJECT APPLICANT";
+
+                decisionExplanation.innerHTML = `Candidate <strong>did not pass</strong> automated metrics. Experience/salary scale imbalance or low screening scores detected. Recommendation: <strong>Hold application</strong>.`;
+            }
+
+            // 2. Animated Circular Gauge
+            const percentage = data.score;
+            gaugeScoreNum.textContent = percentage + "%";
+            
+            // Circle circumference = 2 * PI * r = 2 * 3.14159 * 45 = 282.74
+            const circumference = 282.74;
+            const offset = circumference - (percentage / 100) * circumference;
+            radialCircle.style.strokeDashoffset = offset;
+
+            // Change color of gauge based on score
+            if (percentage >= 85) {
+                radialCircle.style.stroke = "var(--color-success)";
+            } else if (percentage >= 70) {
+                radialCircle.style.stroke = "var(--color-primary)";
+            } else {
+                radialCircle.style.stroke = "var(--color-error)";
+            }
+
+            // 3. Dataset Benchmark Bars
+            // Calculate percentages relative to max value for rendering widths
+            const expPercent = Math.min((data.experience / 20) * 100, 100);
+            const projectsPercent = Math.min((data.projects / 15) * 100, 100);
+            const scorePercent = data.score;
+            // Salary ranges from $20k to $200k. Normalize: (val - min) / (max - min)
+            const salaryNormalized = Math.max(data.salary - 20000, 0);
+            const salaryPercent = Math.min((salaryNormalized / 180000) * 100, 100);
+
+            metricExp.textContent = data.experience;
+            metricProjects.textContent = data.projects;
+            metricScore.textContent = data.score;
+            metricSalary.textContent = Number(data.salary).toLocaleString();
+
+            setTimeout(() => {
+                barFillExp.style.width = expPercent + "%";
+                barFillProjects.style.width = projectsPercent + "%";
+                barFillScore.style.width = scorePercent + "%";
+                barFillSalary.style.width = salaryPercent + "%";
+            }, 100);
+
+            // 4. Key Recruiter Observations Comments Generation
+            generateInsights(data, prediction);
+            showToast("Screening completed successfully!", "success");
+        }
+
+        // Dynmically generates qualitative recommendations based on quantitative form values
+        function generateInsights(data, decision) {
+            let insights = [];
+            
+            // Experience check
+            if (data.experience >= 8) {
+                insights.push(`Strong seniority with ${data.experience} years of experience.`);
+            } else if (data.experience < 3) {
+                insights.push(`Early-career developer (${data.experience} yrs) — may require onboarding mentorship.`);
+            }
+            
+            // Salary check
+            if (data.salary > 110000 && decision === "Reject") {
+                insights.push(`High salary expectations ($${data.salary.toLocaleString()}) might exceed budget for this experience level.`);
+            } else if (data.salary <= 75000) {
+                insights.push(`Very competitive compensation expectations ($${data.salary.toLocaleString()}), maximizing ROI.`);
+            }
+
+            // Project count check
+            if (data.projects >= 7) {
+                insights.push(`Highly active builder with ${data.projects} key projects handled.`);
+            } else if (data.projects < 3) {
+                insights.push(`Limited project portfolio (${data.projects} items) — review hands-on technical depth.`);
+            }
+
+            // AI score check
+            if (data.score >= 90) {
+                insights.push(`Exceptional technical score of ${data.score}%, indicating top-tier problem solving.`);
+            } else if (data.score < 70) {
+                insights.push(`Low screening score (${data.score}%) — technical knowledge gaps could be present.`);
+            }
+
+            // Fallback default
+            if (insights.length === 0) {
+                insights.push("Candidate credentials hover around dataset averages. Balanced score across all criteria.");
+            }
+
+            // Render list
+            insightObservations.innerHTML = `
+                <ul style="padding-left: 16px; margin: 0; display: flex; flex-direction: column; gap: 6px;">
+                    ${insights.map(ins => `<li>${ins}</li>`).join('')}
+                </ul>
+            `;
+        }
+
+        // Periodic checks
+        setInterval(checkBackend, 5000);
+
+        // Run setup
+        window.addEventListener("DOMContentLoaded", () => {
+            initPresets();
+            checkBackend();
+        });
+    </script>
+</body>
+</html>
